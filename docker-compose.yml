@@ -1,16 +1,22 @@
 version: '3'
 
 services:
+  user:
+    image: docker.io/library/user-service-api:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - moveinsync
   admin:
     image: docker.io/library/admin-service-api:latest
     ports:
       - "8081:8081"
     networks:
       - moveinsync
-  user:
-    image: docker.io/library/user-service-api:latest
+  cabs-data:
+    image: docker.io/library/cabs-data-service:latest
     ports:
-      - "8080:8080"
+      - "8082:8082"
     networks:
       - moveinsync
   
