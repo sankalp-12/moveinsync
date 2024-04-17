@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 	"github.com/sankalp-12/moveinsync/admin-service/routes"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -47,6 +48,20 @@ func main() {
 	// You can now use the "client" variable to interact with your MongoDB database.
 	admins := client.Database(os.Getenv("MONGO_DB1_NAME")).Collection(os.Getenv("MONGO_COLLECTION_ADMINS"))
 	cabs := client.Database(os.Getenv("MONGO_DB2_NAME")).Collection(os.Getenv("MONGO_COLLECTION_CABS"))
+
+	// Create a 2dsphere index on the "location" field of the "cabs" collection
+	_, err = cabs.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys: bson.M{
+				"location": "2dsphere",
+			},
+		},
+	)
+	if err != nil {
+		logger.Fatal().Msg("Internal server error: Unable to create 2dsphere index on 'location' field of 'cabs' collection")
+	}
+	logger.Info().Msg("2dsphere index created on 'location' field of 'cabs' collection")
 
 	// Setup the router
 	r := routes.SetupRouter(admins, cabs, logger)

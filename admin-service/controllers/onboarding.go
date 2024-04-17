@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Create function creates a new admin in the database
 func Create(c *gin.Context, admins *mongo.Collection, logger zerolog.Logger) {
 	// Get JSON body from request
 	var admin models.Admin
@@ -62,6 +63,7 @@ func Create(c *gin.Context, admins *mongo.Collection, logger zerolog.Logger) {
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
+// Login function logs in an admin and returns a JWT token
 func Login(c *gin.Context, admins *mongo.Collection, logger zerolog.Logger) {
 	// Get JSON body from request
 	var adminRequest models.Admin

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/sankalp-12/moveinsync/user-service/controllers"
+	"github.com/sankalp-12/moveinsync/user-service/middlewares"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -21,6 +22,12 @@ func SetupRouter(users *mongo.Collection, logger zerolog.Logger) *gin.Engine {
 			})
 			user.POST("/login", func(c *gin.Context) {
 				controllers.Login(c, users, logger)
+			})
+			user.POST("/booktrip", middlewares.Validate(logger), func(c *gin.Context) {
+				controllers.BookTrip(c, users, logger)
+			})
+			user.POST("/displaynearbycabs", middlewares.Validate(logger), func(c *gin.Context) {
+				controllers.DisplayNearbyCabs(c, users, logger)
 			})
 		}
 	}

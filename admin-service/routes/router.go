@@ -27,6 +27,15 @@ func SetupRouter(admins *mongo.Collection, cabs *mongo.Collection, logger zerolo
 				controllers.AddCabs(c, cabs, logger)
 			})
 		}
+		cab := v1.Group("/cab")
+		{
+			cab.GET("/available", func(c *gin.Context) {
+				controllers.SuggestAvailableCabs(c, cabs, logger)
+			})
+			cab.GET("/busy", func(c *gin.Context) {
+				controllers.SuggestBusyCabs(c, cabs, logger)
+			})
+		}
 	}
 
 	return r

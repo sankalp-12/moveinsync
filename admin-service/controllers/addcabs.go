@@ -11,11 +11,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// AddCabs function adds a new cab to the database
 func AddCabs(c *gin.Context, cabs *mongo.Collection, logger zerolog.Logger) {
-	// Initialise cab struct with default values
+	// Initialise cab struct with default values: Location as MoveInSync HQ
 	cab := models.Cab{
 		Location: models.GeoJSONPoint{
-			Name:        "MoveInSync HQ",
+			Type:        "Point",
 			Coordinates: []float64{77.64344998289836, 12.912447107980537},
 		},
 		Status:      "Available",

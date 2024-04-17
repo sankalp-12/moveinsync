@@ -11,6 +11,6 @@ type Cab struct {
 
 // GeoJSONPoint represents a GeoJSON Point
 type GeoJSONPoint struct {
-	Name        string    `json:"name" bson:"name"`
+	Type        string    `json:"type" bson:"type"`
 	Coordinates []float64 `json:"coordinates"`
 }
