@@ -3,11 +3,8 @@ package controllers
 import (
 	"context"
 	"net/http"
-	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 	"github.com/rs/zerolog"
 	"github.com/sankalp-12/moveinsync/admin-service/models"
 	"github.com/sankalp-12/moveinsync/admin-service/utils"
@@ -15,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Create(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
+func Create(c *gin.Context, admins *mongo.Collection, logger zerolog.Logger) {
 	// Get JSON body from request
 	var admin models.Admin
 	if err := c.ShouldBindJSON(&admin); err != nil {
@@ -26,7 +23,7 @@ func Create(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
 
 	// Check if the username already exists
 	var existingAdmin models.Admin
-	err := users.FindOne(context.TODO(), bson.M{"username": admin.Username}).Decode(&existingAdmin)
+	err := admins.FindOne(context.TODO(), bson.M{"username": admin.Username}).Decode(&existingAdmin)
 	if err == nil {
 		// Username already exists
 		logger.Error().Msg("Username already exists")
@@ -53,7 +50,7 @@ func Create(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
 	}
 
 	// Insert user in MongoDB
-	_, err = users.InsertOne(context.TODO(), adminModel)
+	_, err = admins.InsertOne(context.TODO(), adminModel)
 	if err != nil {
 		logger.Error().Msg("Unable to insert admin in database")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to insert admin in database"})
@@ -65,7 +62,7 @@ func Create(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
-func Login(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
+func Login(c *gin.Context, admins *mongo.Collection, logger zerolog.Logger) {
 	// Get JSON body from request
 	var adminRequest models.Admin
 	if err := c.ShouldBindJSON(&adminRequest); err != nil {
@@ -76,7 +73,7 @@ func Login(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
 
 	// Find the user in MongoDB
 	var adminDB models.Admin
-	err := users.FindOne(context.TODO(), bson.M{"username": adminRequest.Username}).Decode(&adminDB)
+	err := admins.FindOne(context.TODO(), bson.M{"username": adminRequest.Username}).Decode(&adminDB)
 	if err != nil {
 		logger.Error().Msg("Username is incorrect")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username is incorrect"})
@@ -91,23 +88,16 @@ func Login(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
 		return
 	}
 
-	// Create the token
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["username"] = adminDB.Username
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // Token expires in 24 hours
-
-	// Generate the token string
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	// Sign a JWT token
+	tokenString, err := utils.SignJWT(adminDB.Username)
 	if err != nil {
 		logger.Error().Msg("Failed to generate JWT token")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate JWT token"})
 		return
 	}
 
-	// Return the token as response
+	// Return the token as response and set the JWT token in the Authorization header
 	logger.Info().Msg("Admin successfully logged in")
+	c.Header("Authorization", "Bearer "+tokenString)
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }

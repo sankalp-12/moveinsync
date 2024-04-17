@@ -45,10 +45,11 @@ func main() {
 	logger.Info().Msg("Connected to Mongo!")
 
 	// You can now use the "client" variable to interact with your MongoDB database.
-	admins := client.Database(os.Getenv("MONGO_DB_NAME")).Collection(os.Getenv("MONGO_COLLECTION_ADMINS"))
+	admins := client.Database(os.Getenv("MONGO_DB1_NAME")).Collection(os.Getenv("MONGO_COLLECTION_ADMINS"))
+	cabs := client.Database(os.Getenv("MONGO_DB2_NAME")).Collection(os.Getenv("MONGO_COLLECTION_CABS"))
 
 	// Setup the router
-	r := routes.SetupRouter(admins, logger)
+	r := routes.SetupRouter(admins, cabs, logger)
 	logger.Info().Msg("Setup Complete. Starting user-service...")
 	r.Run(":" + os.Getenv("PORT"))
 }

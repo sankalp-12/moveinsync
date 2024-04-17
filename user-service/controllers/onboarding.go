@@ -3,11 +3,8 @@ package controllers
 import (
 	"context"
 	"net/http"
-	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 	"github.com/rs/zerolog"
 	"github.com/sankalp-12/moveinsync/user-service/models"
 	"github.com/sankalp-12/moveinsync/user-service/utils"
@@ -91,23 +88,16 @@ func Login(c *gin.Context, users *mongo.Collection, logger zerolog.Logger) {
 		return
 	}
 
-	// Create the token
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["username"] = userDB.Username
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // Token expires in 24 hours
-
-	// Generate the token string
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	// Sign the JWT token
+	tokenString, err := utils.SignJWT(userRequest.Username)
 	if err != nil {
 		logger.Error().Msg("Failed to generate JWT token")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate JWT token"})
 		return
 	}
 
-	// Return the token as response
+	// Return the token as response and set the JWT token in the Authorization header
 	logger.Info().Msg("User successfully logged in")
+	c.Header("Authorization", "Bearer "+tokenString)
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
