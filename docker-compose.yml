@@ -13,8 +13,8 @@ services:
       - "8081:8081"
     networks:
       - moveinsync
-  cabs-data:
-    image: docker.io/library/cabs-data-service:latest
+  cab-data:
+    image: docker.io/library/cab-data-service:latest
     ports:
       - "8082:8082"
     networks:
