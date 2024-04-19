@@ -2,7 +2,7 @@
 
 This repository contains the case study analysis report, the demo video as well as the code implementation for the MoveInSync case study titled "Smart Cab Allocation System". 
 
-Click [here]() for the case study analysis report. <br/>
+Click [here](https://github.com/sankalp-12/moveinsync/blob/master/Analysis%20Report.pdf) for the case study analysis report. <br/>
 Click [here]() for the demonstration video of the implementation. <br/>
 Click [here](https://github.com/sankalp-12/moveinsync) for the code repository of the implementation.
 
