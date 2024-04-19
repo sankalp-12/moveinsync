@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/Depado/ginprom"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
@@ -69,6 +70,14 @@ func main() {
 
 	// Setup the router
 	router := gin.Default()
+
+	// Setup Prometheus metrics
+	p := ginprom.New(
+		ginprom.Engine(router),
+		ginprom.Subsystem("gin"),
+		ginprom.Path("/metrics"),
+	)
+	router.Use(p.Instrument())
 
 	// WebSocket handler for cabs
 	router.GET("/cab/ws", func(c *gin.Context) {

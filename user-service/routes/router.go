@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -12,6 +13,13 @@ import (
 func SetupRouter(users *mongo.Collection, logger zerolog.Logger) *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.Default())
+
+	p := ginprom.New(
+		ginprom.Engine(r),
+		ginprom.Subsystem("gin"),
+		ginprom.Path("/metrics"),
+	)
+	r.Use(p.Instrument())
 
 	v1 := r.Group("/api/v1")
 	{
