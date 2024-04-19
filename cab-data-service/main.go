@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
@@ -80,7 +79,7 @@ func main() {
 	router.Use(p.Instrument())
 
 	// WebSocket handler for cabs
-	router.GET("/cab/ws", func(c *gin.Context) {
+	router.POST("/cab/ws", func(c *gin.Context) {
 		upgrader := websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -94,13 +93,13 @@ func main() {
 
 		// Add cab client to the cabClients map
 		cabClients[conn] = true
-		log.Println("Cab client connected")
+		logger.Info().Msg("New WebSocket connection established for Cab data...")
 
 		// Read from WebSocket connection
 		for {
 			var cab Cab
 			if err := conn.ReadJSON(&cab); err != nil {
-				log.Println(err)
+				logger.Error().Msg("Failed to read message from WebSocket connection")
 				delete(cabClients, conn)
 				break
 			}
