@@ -45,13 +45,14 @@ Click [here](https://github.com/sankalp-12/moveinsync) for the code repository o
 Username: admin
 Password: admin
 ```
-Once logged in, you can start making dashboards to monitor the application metrics and send alerts. A template dashboard has been provided in `grafana/dashboards/moveinsync.json` with a limited number of visualizations, which you can upload to **Grafana** through the _import_ option while creating a new dashboard.
+
+- Once logged in, you can start making dashboards to monitor the application metrics and send alerts. A template dashboard has been provided in `grafana/dashboards/moveinsync.json` with a limited number of visualizations, which you can upload to **Grafana** through the _import_ option while creating a new dashboard.
 
 - The setup is now complete! You can now start sending HTTP requests to the services (using _curl_ or _Postman_), The different endpoints and their respective request body structures are provided below.
 
 ## API Documentation
 
-### Admin Service
+### Admin-Service
 
 - _Create Admin_
    ```yaml
@@ -103,7 +104,7 @@ Once logged in, you can start making dashboards to monitor the application metri
       }
    ```
 
-### User Service
+### User-Service
 
 - _Create User_
    ```yaml
@@ -188,5 +189,23 @@ Once logged in, you can start making dashboards to monitor the application metri
               },
               "status":"Busy"
           }, ... (upto 5 cabs)
+      }
+   ```
+
+### Cab-Data Service
+
+- _Real-Time Cab-Location Data Integration_
+   ```yaml
+    - Endpoint: `http://localhost:8082/cab/ws`
+    - Method: POST
+    - Request Body:
+      { 
+          "ID": "cab_id",
+          "location":
+          {
+              "type": "Point",
+              "coordiantes": ["[longitude]", "[latitude]"]
+          }
+          "status": "Available"/"Busy"
       }
    ```
