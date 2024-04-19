@@ -48,7 +48,7 @@ Password: admin
 
 - Once logged in, you can start making dashboards to monitor the application metrics and send alerts. A template dashboard has been provided in `grafana/dashboards/moveinsync.json` with a limited number of visualizations, which you can upload to **Grafana** through the _import_ option while creating a new dashboard.
 
-- The setup is now complete! You can now start sending HTTP requests to the services (using _curl_ or _Postman_), The different endpoints and their respective request body structures are provided below.
+- The setup is now complete! You can now start sending HTTP requests to the services (using _curl_ or _Postman_). The different endpoints and their respective request body structures are provided below.
 
 ## API Documentation
 
